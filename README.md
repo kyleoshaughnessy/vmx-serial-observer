@@ -15,3 +15,5 @@ cmake -S vmx-serial-observer -B build_client_debug -DCMAKE_BUILD_TYPE=Debug -DVS
 cmake --build build_server_debug
 cmake --build build_client_debug
 ```
+
+> **_NOTE:_**  Some generators like Visual Studio do not play nicely with the stm32 toolchain used in the client build. Recommended generators when building from Windows are: MinGW Makefiles, Ninja, or NMake Makefiles.
