@@ -44,13 +44,13 @@ target_compile_features(server
 )
 
 if (MSVC)
-    target_compile_options(server
-      PRIVATE /W4 /WX
-    )
+  target_compile_options(server
+    PRIVATE /W4 /WX
+  )
 else()
-    target_compile_options(server
-      PRIVATE -Wall -Wextra -Wpedantic -Werror -Wmissing-declarations -Wdeprecated -Wshadow
-    )
+  target_compile_options(server
+    PRIVATE -Wall -Wextra -Wpedantic -Werror -Wmissing-declarations -Wdeprecated -Wshadow
+  )
 endif()
 
 target_include_directories(server

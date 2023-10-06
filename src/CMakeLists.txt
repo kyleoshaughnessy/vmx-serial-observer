@@ -7,9 +7,9 @@ if((NOT VSO_BUILD_SERVER) AND (NOT VSO_BUILD_CLIENT))
 endif()
 
 if(VSO_BUILD_SERVER)
-	add_subdirectory(server)
+  add_subdirectory(server)
 endif()
 
 if(VSO_BUILD_CLIENT)
-	add_subdirectory(client)
+  add_subdirectory(client)
 endif()

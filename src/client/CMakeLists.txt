@@ -7,16 +7,16 @@ find_package(CMSIS COMPONENTS STM32F411CE REQUIRED)
 find_package(HAL COMPONENTS STM32F4 REQUIRED)
 
 add_executable(client
-    main.c
+  main.c
 )
 
 target_link_libraries(client
-    CMSIS::STM32::F411CE
-    STM32::NoSys
+  CMSIS::STM32::F411CE
+  STM32::NoSys
 )
 
 target_include_directories(client
-    PRIVATE ${root_include_dir}
+  PRIVATE ${root_include_dir}
 )
 
 stm32_print_size_of_target(client)
