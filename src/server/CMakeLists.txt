@@ -39,12 +39,20 @@ target_link_libraries(server
   PRIVATE vmx::core
 )
 
-target_compile_features(server PUBLIC cxx_std_20)
+target_compile_features(server
+  PUBLIC cxx_std_20
+)
 
 if (MSVC)
-    target_compile_options(server PRIVATE /W4 /WX)
+    target_compile_options(server
+      PRIVATE /W4 /WX
+    )
 else()
-    target_compile_options(server PRIVATE -Wall -Wextra -Wpedantic -Werror -Wmissing-declarations -Wdeprecated -Wshadow)
+    target_compile_options(server
+      PRIVATE -Wall -Wextra -Wpedantic -Werror -Wmissing-declarations -Wdeprecated -Wshadow
+    )
 endif()
 
-target_include_directories(server PRIVATE ${root_include_dir})
+target_include_directories(server
+  PRIVATE ${root_include_dir}
+)
