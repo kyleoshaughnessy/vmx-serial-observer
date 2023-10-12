@@ -3,9 +3,19 @@
 #include <stm32f4xx_hal.h>
 #include <stdio.h>
 
-
 /* ==== Globals ============================================================ */
 UART_HandleTypeDef uartHandle =  { 0 };
+uint8_t uartRxByte = 0;
+uint8_t bReceived = 0;
+
+typedef enum LED_COMMAND
+{
+    NOTHING,
+    TURN_ON,
+    TURN_OFF
+} LED_COMMAND;
+
+LED_COMMAND ledCommand = NOTHING;
 
 /* ==== Functions ========================================================== */
 static void Error_Handler(void)
@@ -90,40 +100,72 @@ static void initUART(UART_HandleTypeDef *pUARTHandle)
     }
 }
 
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+    if (uartRxByte == '1')
+    {
+        ledCommand = TURN_OFF;
+        bReceived = 1;
+    }
+    else if (uartRxByte == '2')
+    {
+        ledCommand = TURN_ON;
+        bReceived = 1;
+    }
+    else
+    {
+        ledCommand = NOTHING;
+        bReceived = 0;
+    }
+    uartRxByte = '\0';
+
+    HAL_UART_Receive_IT(&uartHandle, &uartRxByte, 1);
+}
+
 int main(void)
 {
-    UART_HandleTypeDef  uartHandle = { 0 };
-    uint8_t             msgOut[25] = { '\0' };
-    uint8_t             msgIn[25]  = { '\0' };
-    uint8_t             numChars;
+    uint8_t msgOut[25] = { '\0' };
+    uint8_t numChars;
 
     HAL_Init();
     initSystemClocks();
     initGPIO();
     initUART(&uartHandle);
 
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-    numChars = sprintf(msgOut, "LED ON\r\n");
+    // Power on banner
+    numChars = sprintf((char *)msgOut, "\r\n");
     HAL_UART_Transmit(&uartHandle, msgOut, numChars + 1, 100);
+    numChars = sprintf((char *)msgOut, "Device powered on...\r\n");
+    HAL_UART_Transmit(&uartHandle, msgOut, numChars + 1, 100);
+    numChars = sprintf((char *)msgOut, "\r\n");
+    HAL_UART_Transmit(&uartHandle, msgOut, numChars + 1, 100);
+
+    // Set initial led pin state
+    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+    numChars = sprintf((char *)msgOut, "LED ON\r\n");
+    HAL_UART_Transmit(&uartHandle, msgOut, numChars + 1, 100);
+    HAL_UART_Receive_IT(&uartHandle, &uartRxByte, 1);
 
     while (1)
     {
-        HAL_UART_Receive(&uartHandle, msgIn, sizeof(msgIn), 100);
+        if (bReceived)
+        {
+            if (ledCommand == TURN_OFF)
+            {
+                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+                numChars = sprintf((char *)msgOut, "LED OFF\r\n");
+                HAL_UART_Transmit(&uartHandle, msgOut, numChars + 1, 100);
+            }
+            else if (ledCommand == TURN_ON)
+            {
+                HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+                numChars = sprintf((char *)msgOut, "LED ON\r\n");
+                HAL_UART_Transmit(&uartHandle, msgOut, numChars + 1, 100);
+            }
 
-        if (msgIn[0] == '1')
-        {
-            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-            numChars = sprintf(msgOut, "LED OFF\r\n");
-            HAL_UART_Transmit(&uartHandle, msgOut, numChars + 1, 100);
+            bReceived = 0;
         }
-        else if (msgIn[0] == '2')
-        {
-            HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-            numChars = sprintf(msgOut, "LED ON\r\n");
-            HAL_UART_Transmit(&uartHandle, msgOut, numChars + 1, 100);
-        }
-        msgIn[0] = '\0';
-        HAL_Delay(500);
+        HAL_Delay(50);
     }
 
     return 0;

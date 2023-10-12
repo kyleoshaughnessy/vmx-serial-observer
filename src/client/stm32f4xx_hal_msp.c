@@ -47,12 +47,12 @@ void HAL_UART_MspInit(UART_HandleTypeDef* huart)
     }
 }
 
-/**
-* @brief UART MSP De-Initialization
-* This function freezes the hardware resources
-* @param huart: UART handle pointer
-* @retval None
-*/
+/*!
+ * @brief UART MSP De-Initialization
+ * This function freezes the hardware resources
+ * @param huart: UART handle pointer
+ * @retval None
+ */
 void HAL_UART_MspDeInit(UART_HandleTypeDef* huart)
 {
     if(huart->Instance==USART1)
