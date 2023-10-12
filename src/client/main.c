@@ -3,6 +3,10 @@
 #include <stm32f4xx_hal.h>
 #include <stdio.h>
 
+
+/* ==== Globals ============================================================ */
+UART_HandleTypeDef uartHandle =  { 0 };
+
 /* ==== Functions ========================================================== */
 static void Error_Handler(void)
 {
