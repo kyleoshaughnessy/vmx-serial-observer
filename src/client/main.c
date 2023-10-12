@@ -16,7 +16,7 @@ static void Error_Handler(void)
     }
 }
 
-static void initClocks()
+static void initSystemClocks()
 {
     RCC_OscInitTypeDef rccOscInit = {0};
     RCC_ClkInitTypeDef rccClkInit = {0};
@@ -29,13 +29,13 @@ static void initClocks()
 
     // Initialize RCC oscillators
     rccOscInit.OscillatorType = RCC_OSCILLATORTYPE_HSE;
-    rccOscInit.HSEState = RCC_HSE_ON;
-    rccOscInit.PLL.PLLState = RCC_PLL_ON;
-    rccOscInit.PLL.PLLSource = RCC_PLLSOURCE_HSE;
-    rccOscInit.PLL.PLLM = 25;
-    rccOscInit.PLL.PLLN = 192;
-    rccOscInit.PLL.PLLP = RCC_PLLP_DIV2;
-    rccOscInit.PLL.PLLQ = 4;
+    rccOscInit.HSEState       = RCC_HSE_ON;
+    rccOscInit.PLL.PLLState   = RCC_PLL_ON;
+    rccOscInit.PLL.PLLSource  = RCC_PLLSOURCE_HSE;
+    rccOscInit.PLL.PLLM       = 25;
+    rccOscInit.PLL.PLLN       = 192;
+    rccOscInit.PLL.PLLP       = RCC_PLLP_DIV2;
+    rccOscInit.PLL.PLLQ       = 4;
     if (HAL_RCC_OscConfig(&rccOscInit) != HAL_OK)
     {
         Error_Handler();
@@ -60,7 +60,7 @@ static void initGPIO()
 {
     GPIO_InitTypeDef gpioInit = { 0 };
 
-    // Enabled clocks for GPIO ports
+    // Enable clocks for GPIO ports
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOC_CLK_ENABLE();
     __HAL_RCC_GPIOH_CLK_ENABLE();
@@ -92,13 +92,13 @@ static void initUART(UART_HandleTypeDef *pUARTHandle)
 
 int main(void)
 {
-    UART_HandleTypeDef uartHandle =  { 0 };
-    uint8_t msgOut[25]  = {'\0'};
-    uint8_t msgIn[25]   = {0};
-    uint8_t numChars;
+    UART_HandleTypeDef  uartHandle = { 0 };
+    uint8_t             msgOut[25] = { '\0' };
+    uint8_t             msgIn[25]  = { '\0' };
+    uint8_t             numChars;
 
     HAL_Init();
-    initClocks();
+    initSystemClocks();
     initGPIO();
     initUART(&uartHandle);
 
@@ -124,7 +124,6 @@ int main(void)
         }
         msgIn[0] = '\0';
         HAL_Delay(500);
-        // HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
     }
 
     return 0;
